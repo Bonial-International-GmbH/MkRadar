@@ -1,0 +1,49 @@
+wikiPages:
+  -
+    category: OPS
+    notification: true
+    tags: "aws, go"
+    label: "aws-nuke"
+    url: "https://raw.githubusercontent.com/rebuy-de/aws-nuke/master/README.md"
+  -
+    category: OPS
+    notification: false
+    tags: "terraform, go, shell, provider"
+    label: "terraform config inspect"
+    url: "https://raw.githubusercontent.com/Bonial-International-GmbH/terraform-config-inspect/master/README.md"
+  -
+    category: OPS
+    notification: false
+    tags: "terraform, go, shell, provider"
+    label: "Terraform Provider Dmsnitch"
+    url: "https://raw.githubusercontent.com/Bonial-International-GmbH/terraform-provider-dmsnitch/master/README.md"
+  -
+    category: Personal
+    notification: false
+    tags: "terraform"
+    label: "myPersonalCloudLab"
+    url: "https://raw.githubusercontent.com/pesarkhobeee/myPersonalCloudLab/master/README.md"
+  -
+    category: Personal
+    notification: false
+    tags: "python"
+    label: "Downloadchibashi"
+    url: "https://raw.githubusercontent.com/pesarkhobeee/Downloadchibashi/master/README.md"
+  -
+    category: Bitbucket
+    notification: false
+    tags: "java, brngr"
+    label: "BRNGR"
+    url: "https://bitbucket.org/bonialgroup/brngr/src/master/README.md"
+  -
+    category: OPS
+    notification: false
+    tags: "devops"
+    label: "change logs"
+    url: "https://bitbucket.org/bonialgroup/devops-changelog/src/master/README.md"
+  -
+    category: bonialgroup
+    notification: false
+    tags: "devops"
+    label: "Blog Tracking"
+    url: "https://bitbucket.org/bonialgroup/blog-tracking/src/master/README.md"

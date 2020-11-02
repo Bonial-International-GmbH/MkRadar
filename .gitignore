@@ -1,0 +1,7 @@
+venv
+.idea
+logs
+website
+helpers/__pycache__/
+.DS_Store
+

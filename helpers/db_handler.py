@@ -1,0 +1,77 @@
+"""Wrapper for all DB related stuff"""
+import sqlite3
+from sqlite3 import Error
+from helpers.logger import Logger
+
+logger = Logger.initial(__name__)
+
+
+class DB:
+    """check if URL was in the DB and content was not changed"""
+
+    @staticmethod
+    def connect_to_db():
+        """ create a database connection to a database that resides
+            in the memory
+        """
+        try:
+            sql_create_markdowns_table = """CREATE TABLE IF NOT EXISTS markdowns (
+                                    id integer PRIMARY KEY,
+                                    url text NOT NULL,                                    
+                                    markdown_file_path text NOT NULL,
+                                    file_content_hash text NOT NULL,
+                                    category text NOT NULL,
+                                    label text NOT NULL,
+                                    latest_update timestamp NOT NULL
+                                );"""
+            conn = sqlite3.connect('website/Mkradar.db')
+            # create projects table
+            c = conn.cursor()
+            c.execute(sql_create_markdowns_table)
+            return conn
+        except Error as e:
+            logger.error(e)
+
+    @staticmethod
+    def get_markdowns_menu() -> list:
+        conn = DB.connect_to_db()
+        c = conn.cursor()
+        c.execute("SELECT label, markdown_file_path, category FROM markdowns ORDER BY category")
+        data = c.fetchall()
+        return data
+
+    @staticmethod
+    def new_update(now: str) -> int:
+        conn = DB.connect_to_db()
+        c = conn.cursor()
+        c.execute("SELECT * FROM markdowns WHERE latest_update >=?", (now,))
+        data = c.fetchall()
+        return len(data)
+
+    @staticmethod
+    def insert_only_new_content(url: str, markdown_file_path: str, file_content_hash: str, category: str, label: str, now: str) -> bool:
+        conn = DB.connect_to_db()
+        c = conn.cursor()
+        c.execute("SELECT file_content_hash FROM markdowns WHERE url=?", (url,))
+        data = c.fetchall()
+        conn.commit()
+        if len(data) > 0:
+            if file_content_hash == data[0][0]:
+                return False
+            else:
+                c.execute("UPDATE markdowns SET file_content_hash=? WHERE url=?;", (file_content_hash, url))
+                conn.commit()
+                return True
+        else:
+            c.execute("INSERT INTO markdowns VALUES (null, ?, ?, ?, ?, ?, ?);", \
+                      (url, markdown_file_path, file_content_hash, category, label, now))
+            conn.commit()
+            return True
+
+    @staticmethod
+    def is_exist_in_db(markdown_file_path: str) -> bool:
+        conn = DB.connect_to_db()
+        c = conn.cursor()
+        c.execute("SELECT * FROM markdowns WHERE markdown_file_path ==?", (markdown_file_path,))
+        data = c.fetchall()
+        return bool(data)
