@@ -1,5 +1,6 @@
 """Prepare correct settings to get the MarkDown files"""
 import requests
+import os
 from helpers.logger import Logger
 
 logger = Logger.initial(__name__)
@@ -16,8 +17,12 @@ class UrlOpener:
 
     @staticmethod
     def _detect(desired_url):
-        if "bitbucket.org" in desired_url:
+        if "github.com" in desired_url:
+            return UrlOpener._github(desired_url)
+        elif "bitbucket.org" in desired_url:
             return UrlOpener._bitbucket(desired_url)
+        elif "gitlab.com" in desired_url:
+            return UrlOpener._gitlab(desired_url)
         else:
             return requests.get(desired_url)
 
@@ -42,6 +47,39 @@ class UrlOpener:
             return html
 
     @staticmethod
-    def _bitbucket(url):
+    def _github(url: str, mode: str = "private"):
+        url = url.replace("/blob/", "/")
+        url = url.replace("/raw/", "/")
+        url = url.replace("github.com/", "raw.githubusercontent.com/")
+
+        if mode == "public":
+            return requests.get(url)
+        else:
+            token = os.getenv('GITHUB_TOKEN', '...')
+            headers = {
+                'Authorization': f'token {token}',
+                'Accept': 'application/vnd.github.v3.raw'}
+            return requests.get(url, headers=headers)
+
+    @staticmethod
+    def _bitbucket(url: str, mode: str = "private"):
         url = url.replace("bitbucket.org/", "api.bitbucket.org/2.0/repositories/")
-        return requests.get(url, auth=("USERNAME", "APP_PASSWORD"))
+        if mode == "public":
+            return requests.get(url)
+        else:
+            username = os.getenv('BITBUCKET_USERNAME', '...')
+            password = os.getenv('BITBUCKET_APP_PASSWORD', '...')
+            return requests.get(url, auth=(username, password))
+
+    @staticmethod
+    def _gitlab(url: str, mode: str = "private"):
+        url = url.replace("gitlab.com/", "gitlab.com/api/v4/")
+        # todo: complete the private section with help of below link
+        # https://docs.gitlab.com/ee/api/repository_files.html#get-raw-file-from-repository
+        if mode == "public":
+            return requests.get(url)
+        else:
+            token = os.getenv('GITLAB_TOKEN', '...')
+            headers = {'PRIVATE-TOKEN': token}
+            return requests.get(url, headers=headers)
+
