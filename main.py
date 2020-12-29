@@ -16,10 +16,10 @@ def initial():
     now = datetime.now()
 
     for item in config:
-        logger.info(f"Registering {item['label']} thread")
+        logger.info(f"Registering {item['title']} thread")
         url_type = item.get('type', 'public')
         threads.append(Thread(target=Compiler.save_content_if_it_was_new,
-                              args=(item['url'], item['category'], item['label'], now, url_type)))
+                              args=(item['url'], item['category'], item['title'], now, url_type)))
 
         markdowns_in_config.append(item)
 
