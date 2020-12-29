@@ -15,7 +15,23 @@ class Compiler:
     """Will download MarkDown file and generate static website from downloaded MDs if it is needed"""
 
     @staticmethod
-    def _generate_md_file_address(url: str, markdown_directory_path: str) -> str:
+    def config_reader() -> list:
+        config = []
+        with open("radar_config.yaml", 'r') as stream:
+            try:
+                config = yaml.safe_load(stream)
+            except yaml.YAMLError as exc:
+                logger.error(exc)
+        return config["wikiPages"]
+
+    @staticmethod
+    def get_all_mds_address_from_config_file() -> list:
+        return [Compiler._generate_md_file_address(md["url"], md["category"]) for md in Compiler.config_reader()]
+
+    @staticmethod
+    def _generate_md_file_address(url: str, category: str) -> str:
+        markdown_directory_path = f"website/docs/{category}/"
+        Path(markdown_directory_path).mkdir(parents=True, exist_ok=True)
         file_name_hash = hashlib.md5(url.encode("utf-8")).hexdigest()
         markdown_file_path = markdown_directory_path + file_name_hash + ".md"
         return markdown_file_path
@@ -39,14 +55,13 @@ class Compiler:
 
     @staticmethod
     def check_website_and_save_new_contents(url: str, category: str, label: str, now: str):
-        markdown_directory_path = f"website/docs/{category}/"
-        markdown_file_path = Compiler._generate_md_file_address(url, markdown_directory_path)
+
+        markdown_file_path = Compiler._generate_md_file_address(url, category)
 
         url_content_hash, url_content_html = Compiler._get_website_content(url)
 
         # If something detect as a changed case from DB side we should save MD file to the disk and trigger HTML creator
         if DB.insert_only_new_content(url, markdown_file_path, url_content_hash, category, label, now):
-            Path(markdown_directory_path).mkdir(parents=True, exist_ok=True)
             Compiler._write_into_file(markdown_file_path, url_content_html, "wb")
 
     @staticmethod
@@ -70,13 +85,13 @@ class Compiler:
         Compiler._write_into_file("website/mkdocs.yml", yaml.dump(menu), 'w')
 
     @staticmethod
-    def generate_new_static_html_site(now: str):
+    def generate_new_static_html_site_if_it_is_needed(now: str):
+        config_file_change_detected = Cleaner.clean(Compiler.get_all_mds_address_from_config_file())
+        any_new_item_in_the_db = DB.is_there_any_new_update(now)
 
-        if DB.new_update(now):
+        if config_file_change_detected or any_new_item_in_the_db:
             Compiler._generate_new_menu()
 
             p1 = subprocess.run(['mkdocs', 'build', '--clean'], capture_output=True, text=True, cwd='website')
             logger.info(p1.stdout)
             logger.error(p1.stderr)
-
-            Cleaner.clean()

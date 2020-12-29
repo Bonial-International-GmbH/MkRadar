@@ -11,8 +11,7 @@ class DB:
 
     @staticmethod
     def connect_to_db():
-        """ create a database connection to a database that resides
-            in the memory
+        """ create a database connection to a database
         """
         try:
             sql_create_markdowns_table = """CREATE TABLE IF NOT EXISTS markdowns (
@@ -41,7 +40,7 @@ class DB:
         return data
 
     @staticmethod
-    def new_update(now: str) -> int:
+    def is_there_any_new_update(now: str) -> int:
         conn = DB.connect_to_db()
         c = conn.cursor()
         c.execute("SELECT * FROM markdowns WHERE latest_update >=?", (now,))
@@ -75,3 +74,19 @@ class DB:
         c.execute("SELECT * FROM markdowns WHERE markdown_file_path ==?", (markdown_file_path,))
         data = c.fetchall()
         return bool(data)
+
+    @staticmethod
+    def get_all_markdown_file_paths() -> list:
+        conn = DB.connect_to_db()
+        conn.row_factory = lambda cursor, row: row[0]
+        c = conn.cursor()
+        c.execute("SELECT markdown_file_path FROM markdowns")
+        data = c.fetchall()
+        return data
+
+    @staticmethod
+    def delete_markdown_via_filepath(markdown_file_path: str):
+        conn = DB.connect_to_db()
+        c = conn.cursor()
+        c.execute("DELETE FROM markdowns WHERE markdown_file_path ==?;", (markdown_file_path,))
+        conn.commit()

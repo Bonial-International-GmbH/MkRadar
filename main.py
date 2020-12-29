@@ -7,19 +7,15 @@ from helpers.logger import Logger
 logger = Logger.initial(__name__)
 
 
-def config_reader():
+def initial():
 
-    with open("radar_config.yaml", 'r') as stream:
-        try:
-            config = yaml.safe_load(stream)
-        except yaml.YAMLError as exc:
-            logger.error(exc)
+    config = Compiler.config_reader()
 
     markdowns_in_config = []
     threads = []
     now = datetime.now()
 
-    for item in config["wikiPages"]:
+    for item in config:
         logger.info(f"Registering {item['label']} thread")
         threads.append(Thread(target=Compiler.check_website_and_save_new_contents,
                               args=(item['url'], item['category'], item['label'], now)))
@@ -33,9 +29,9 @@ def config_reader():
     for thread in threads:
         thread.join()
 
-    Compiler.generate_new_static_html_site(now)
+    Compiler.generate_new_static_html_site_if_it_is_needed(now)
 
 
 if __name__ == '__main__':
     logger.info("Starting the program")
-    config_reader()
+    initial()
