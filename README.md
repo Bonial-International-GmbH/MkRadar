@@ -1,12 +1,12 @@
 # MkRadar
 *Markdowns tracker and wiki Generator*
 
-Usually, when people changing their source code they keep forgetting to update related documents on the wiki side, \
-also, having a well-structured wiki which we can track it easily and \
+Usually, when people changing their source code they keep forgetting to update related documents on the wiki side, 
+also, having a well-structured wiki which we can track it easily and 
 changing it smoothly is hard, therefore, here we are trying to find a solution for these problems.
 
-We believe holding the whole documentation alongside the codes as the markdown files will empower us to solve the mentioned issues. \
-The idea is building a tool that monitors markdown files and download and compiles them if they changed, \
+We believe holding the whole documentation alongside the codes as the markdown files will empower us to solve the mentioned issues. 
+The idea is building a tool that monitors markdown files and download and compiles them if they changed, 
 it should cover these goals:
 
 * YAML based config system to let everybody add or change the wiki pages as the code
@@ -16,10 +16,10 @@ it should cover these goals:
  
 ## Configuration 
 
-To centralize all the configuration there is a file named `radar_config.yaml` \
+To centralize all the configuration there is a file named `radar_config.yaml` 
 that let us add a new entity for each MarkDown URL and all other related metadata that is needed.
-The structure of the file looks like this, remember  `title`, `category` and `url` are mandatory and \
-we are using them to generate static site menu items,\
+The structure of the file looks like this, remember  `title`, `category` and `url` are mandatory and 
+we are using them to generate static site menu items,
 but you are able to add more fields to add more meaning for each entity like `tags`.
 
 ```
@@ -38,7 +38,7 @@ wikiPages:
     url: "https://github.com/Bonial-International-GmbH/terraform-provider-site24x7/blob/master/Makefile"
 ```
 
-After adding the desired MarkDowns you can easily run the program \
+After adding the desired MarkDowns you can easily run the program 
  with the help of `docker-compose up` command.
 
 ## Private Repositories 
@@ -52,14 +52,15 @@ Here is the list of supported private git services and how we should create auth
 - For each entity in `radar_config.yaml` which should authenticate you should add `type: private`
 
 ### Bitbucket:
-- First you should create a https://bitbucket.org/account/settings/app-passwords/
+- Go to the https://bitbucket.org/account/settings/app-passwords/
+- Give a label and grant read permission to the repositories
 - Then you should find your username which you can find at https://bitbucket.org/account/settings/
 - Then enter them to the `docker-compose.yaml` file's environment section
 - For each entity in `radar_config.yaml` which should authenticate you should add `type: private`
 
 ## Special thanks and kudos
 
-We are using [MkDocs](https://www.mkdocs.org) to generate the static website from markdown files, \
+We are using [MkDocs](https://www.mkdocs.org) to generate the static website from markdown files, 
  and it is an elegant tool thanks to its contributors.   
   
 ## Future plans and Development environment

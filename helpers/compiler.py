@@ -37,9 +37,9 @@ class Compiler:
         return markdown_file_path
 
     @staticmethod
-    def _get_website_content(url: str) -> tuple:
+    def _get_website_content(url: str, url_type: str) -> tuple:
         logger.info(f"Check Url: {url}")
-        html = UrlOpener.open(url)
+        html = UrlOpener.open(url, url_type)
         url_content_hash = hashlib.md5(html.encode("utf-8")).hexdigest()
         logger.info(url_content_hash)
         return url_content_hash, html
@@ -54,11 +54,11 @@ class Compiler:
             logger.info(f"File was writen in {file}")
 
     @staticmethod
-    def check_website_and_save_new_contents(url: str, category: str, label: str, now: str):
+    def save_content_if_it_was_new(url: str, category: str, label: str, now: str, url_type: str = "public"):
 
         markdown_file_path = Compiler._generate_md_file_address(url, category)
 
-        url_content_hash, url_content_html = Compiler._get_website_content(url)
+        url_content_hash, url_content_html = Compiler._get_website_content(url, url_type)
 
         # If something detect as a changed case from DB side we should save MD file to the disk and trigger HTML creator
         if DB.insert_only_new_content(url, markdown_file_path, url_content_hash, category, label, now):

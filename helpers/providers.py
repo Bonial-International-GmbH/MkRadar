@@ -10,19 +10,19 @@ class UrlOpener:
     """Handle authentication automatically if it's needed and get the content"""
 
     @staticmethod
-    def open(desired_url):
+    def open(desired_url: str, url_type: str):
         logger.info(f"Check Url: {desired_url}")
-        url_getter = UrlOpener._detect(desired_url)
+        url_getter = UrlOpener._detect(desired_url, url_type)
         return UrlOpener.download_website(url_getter)
 
     @staticmethod
-    def _detect(desired_url):
+    def _detect(desired_url: str, url_type: str):
         if "github.com" in desired_url:
-            return UrlOpener._github(desired_url)
+            return UrlOpener._github(desired_url, url_type)
         elif "bitbucket.org" in desired_url:
-            return UrlOpener._bitbucket(desired_url)
+            return UrlOpener._bitbucket(desired_url, url_type)
         elif "gitlab.com" in desired_url:
-            return UrlOpener._gitlab(desired_url)
+            return UrlOpener._gitlab(desired_url, url_type)
         else:
             return requests.get(desired_url)
 
@@ -47,7 +47,7 @@ class UrlOpener:
             return html
 
     @staticmethod
-    def _github(url: str, mode: str = "private"):
+    def _github(url: str, mode: str):
         url = url.replace("/blob/", "/")
         url = url.replace("/raw/", "/")
         url = url.replace("github.com/", "raw.githubusercontent.com/")
@@ -62,7 +62,7 @@ class UrlOpener:
             return requests.get(url, headers=headers)
 
     @staticmethod
-    def _bitbucket(url: str, mode: str = "private"):
+    def _bitbucket(url: str, mode: str):
         url = url.replace("bitbucket.org/", "api.bitbucket.org/2.0/repositories/")
         if mode == "public":
             return requests.get(url)
@@ -72,7 +72,7 @@ class UrlOpener:
             return requests.get(url, auth=(username, password))
 
     @staticmethod
-    def _gitlab(url: str, mode: str = "private"):
+    def _gitlab(url: str, mode: str):
         url = url.replace("gitlab.com/", "gitlab.com/api/v4/")
         # todo: complete the private section with help of below link
         # https://docs.gitlab.com/ee/api/repository_files.html#get-raw-file-from-repository

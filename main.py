@@ -17,8 +17,9 @@ def initial():
 
     for item in config:
         logger.info(f"Registering {item['label']} thread")
-        threads.append(Thread(target=Compiler.check_website_and_save_new_contents,
-                              args=(item['url'], item['category'], item['label'], now)))
+        url_type = item.get('type', 'public')
+        threads.append(Thread(target=Compiler.save_content_if_it_was_new,
+                              args=(item['url'], item['category'], item['label'], now, url_type)))
 
         markdowns_in_config.append(item)
 
