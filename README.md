@@ -1,68 +1,74 @@
 # MkRadar
-*Markdown Wiki Generator*
+*Markdowns tracker and wiki Generator*
 
-## Attention
+Usually, when people changing their source code they keep forgetting to update related documents on the wiki side, \
+also, having a well-structured wiki which we can track it easily and \
+changing it smoothly is hard, therefore, here we are trying to find a solution for these problems.
 
-This repo in not ready for production use and still acting as a POC
+We believe holding the whole documentation alongside the codes as the markdown files will empower us to solve the mentioned issues. \
+The idea is building a tool that monitors markdown files and download and compiles them if they changed, \
+it should cover these goals:
 
-## problem
-We are facing two problems:
-
-Usually, when people changing their code they keep forgetting to update related documents on the wiki side
-Having a complete and well-structured wiki which we can track its changes and change its structure smoothly is hard
- 
-## solution
-Holding Documentation inside git as the markdown files will empower us to track the changes and have rollback possibility. The idea is building a tool which can empower us to compile markdown files that are right beside their codes, it should cover the below areas:  
-
+* YAML based config system to let everybody add or change the wiki pages as the code
 * Generates a pretty static site from markdown files
-* YAML based config system to let everybody add or change the wiki pages and cover configuration as code 
 * Battle-tested
 * Easy to use in a custom documentation process/system/methodology
  
+## Configuration 
 
-By using a Yaml file that will empower everybody to enter the MarkDown URL and add tags, groups, …. we can centralize all the configuration.
-
-Then in a regular period, we can check all the URLs and turn them to base64 hash and check with the old existing ones.
+To centralize all the configuration there is a file named `radar_config.yaml` \
+that let us add a new entity for each MarkDown URL and all other related metadata that is needed.
+The structure of the file looks like this, remember  `title`, `category` and `url` are mandatory and \
+we are using them to generate static site menu items,\
+but you are able to add more fields to add more meaning for each entity like `tags`.
 
 ```
 --- 
 wikiPages: 
   - 
-    category: OPS
-    notification: true
-    tags: "aws, go"
     title: aws-nuke
+    category: OPS
+    type: public
     url: "https://github.com/rebuy-de/aws-nuke/blob/master/README.md"
   - 
     category: OPS
-    notification: false
-    tags: "terraform, go, shell, provider"
     title: site24*7
+    notification: false
+    tags: "terraform, go, shell"
     url: "https://github.com/Bonial-International-GmbH/terraform-provider-site24x7/blob/master/Makefile"
 ```
-Static site generators from markdown files which we should check:
 
-* mkdocs.org
-* sphinx-doc.org
-* gitbook.com
-* gohugo.io
-* https://github.com/getpelican/pelican
+After adding the desired MarkDowns you can easily run the program \
+ with the help of `docker-compose up` command.
 
-We should also research the location of storage and the possibility of tracking outdated documents.
+## Private Repositories 
 
-## Providers 
+Here is the list of supported private git services and how we should create authentication for them:
 
-We are supporting different web services like github, bitbucket, ....
-Some of them also providing private repositories, therefore, we should so some kind of authuntication \
-here is the list of supported private services and how we should login to them:
+### Github:
+- Go to the https://gitlab.com/-/profile/personal_access_tokens
+- Give a name, grant `read_repository` permission and create your token
+- Enter that to the `docker-compose.yaml` file's environment section
+- For each entity in `radar_config.yaml` which should authenticate you should add `type: private`
 
 ### Bitbucket:
-- first you should create a https://bitbucket.org/account/settings/app-passwords/
-- then you should find your username which you can find in https://bitbucket.org/account/settings/
-- Then enter ir to _bitbucket method in the `helpers/providers.py` file. (TODO: We will change this)
+- First you should create a https://bitbucket.org/account/settings/app-passwords/
+- Then you should find your username which you can find at https://bitbucket.org/account/settings/
+- Then enter them to the `docker-compose.yaml` file's environment section
+- For each entity in `radar_config.yaml` which should authenticate you should add `type: private`
 
+## Special thanks and kudos
+
+We are using [MkDocs](https://www.mkdocs.org) to generate the static website from markdown files, \
+ and it is an elegant tool thanks to its contributors.   
   
-## Development environment:
+## Future plans and Development environment
+
+- It should use [ThreadPoolExecutor](https://tutorialedge.net/python/concurrency/python-threadpoolexecutor-tutorial/) instead of Thread
+- Categories relation should be decoupled from the rest of the entities in the `radar_config.yaml`
+- It should support AWS DBs like Aurora
+- It should download embedded images from private and public repositories
+- It should support downloading nested meltdown files from the initial markdown
 
 ```
 pip3 install virtualenv

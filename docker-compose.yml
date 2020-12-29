@@ -4,3 +4,8 @@ services:
     container_name: MkRadar
     build: ./
     restart: unless-stopped
+    environment:
+      GITHUB_TOKEN: "..."
+      BITBUCKET_USERNAME: "..."
+      BITBUCKET_APP_PASSWORD: "..."
+      GITLAB_TOKEN: "..."
