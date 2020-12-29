@@ -18,7 +18,7 @@ it should cover these goals:
 
 To centralize all the configuration there is a file named `radar_config.yaml` 
 that let us add a new entity for each MarkDown URL and all other related metadata that is needed.
-The structure of the file looks like this, remember  `title`, `category` and `url` are mandatory and 
+The structure of the file looks like this, remember  `title`, `category` and `url` are mandatory, and 
 we are using them to generate static site menu items,
 but you are able to add more fields to add more meaning for each entity like `tags`.
 
@@ -40,6 +40,7 @@ wikiPages:
 
 After adding the desired MarkDowns you can easily run the program 
  with the help of `docker-compose up` command.
+ then you can find the generated static website files in `website/html/` folder.
 
 ## Private Repositories 
 
@@ -65,6 +66,7 @@ We are using [MkDocs](https://www.mkdocs.org) to generate the static website fro
   
 ## Future plans and Development environment
 
+- Support Private repository of Gitlab
 - It should use [ThreadPoolExecutor](https://tutorialedge.net/python/concurrency/python-threadpoolexecutor-tutorial/) instead of Thread
 - Categories relation should be decoupled from the rest of the entities in the `radar_config.yaml`
 - It should support AWS DBs like Aurora

@@ -72,17 +72,25 @@ class Compiler:
             title, file_address, category = item[0], item[1][13:], item[2]
             menu_items[category] = menu_items.get(category, [])
             menu_items[category].append({title: file_address})
-        menu = {"site_name": "MkRadar", "nav": []}
-        menu["nav"].append({"Home": "index.md"})
-        for item in menu_items:
-            menu["nav"].append({item: menu_items[item]})
-        return menu
+        return menu_items
 
     @staticmethod
-    def _generate_new_menu():
-        menu = Compiler._get_menu_items_from_db()
-        logger.info(f" Menu items: {menu}")
-        Compiler._write_into_file("website/mkdocs.yml", yaml.dump(menu), 'w')
+    def _generate_new_mkdocs_config():
+        menu_items = Compiler._get_menu_items_from_db()
+        logger.info(f" Menu items: {menu_items}")
+        mkdocs_config = {
+            "site_name": "MkRadar",
+            "site_dir": "html",
+            "nav": []}
+        mkdocs_config["nav"].append({"Home": "index.md"})
+        for item in menu_items:
+            mkdocs_config["nav"].append({item: menu_items[item]})
+        Compiler._write_into_file("website/mkdocs.yml", yaml.dump(mkdocs_config), 'w')
+
+    @staticmethod
+    def _copy_index_md_to_docs():
+        with open('index.md') as file:
+            Compiler._write_into_file("website/docs/index.md", file.read(), 'w')
 
     @staticmethod
     def generate_new_static_html_site_if_it_is_needed(now: str):
@@ -90,8 +98,8 @@ class Compiler:
         any_new_item_in_the_db = DB.is_there_any_new_update(now)
 
         if config_file_change_detected or any_new_item_in_the_db:
-            Compiler._generate_new_menu()
-
+            Compiler._generate_new_mkdocs_config()
+            Compiler._copy_index_md_to_docs()
             p1 = subprocess.run(['mkdocs', 'build', '--clean'], capture_output=True, text=True, cwd='website')
             logger.info(p1.stdout)
             logger.error(p1.stderr)
