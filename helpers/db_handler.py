@@ -20,7 +20,7 @@ class DB:
                                     markdown_file_path text NOT NULL,
                                     file_content_hash text NOT NULL,
                                     category text NOT NULL,
-                                    label text NOT NULL,
+                                    title text NOT NULL,
                                     latest_update timestamp NOT NULL
                                 );"""
             conn = sqlite3.connect('website/Mkradar.db')
@@ -35,7 +35,7 @@ class DB:
     def get_markdowns_menu() -> list:
         conn = DB.connect_to_db()
         c = conn.cursor()
-        c.execute("SELECT label, markdown_file_path, category FROM markdowns ORDER BY category")
+        c.execute("SELECT title, markdown_file_path, category FROM markdowns ORDER BY category")
         data = c.fetchall()
         return data
 
@@ -48,7 +48,7 @@ class DB:
         return len(data)
 
     @staticmethod
-    def insert_only_new_content(url: str, markdown_file_path: str, file_content_hash: str, category: str, label: str, now: str) -> bool:
+    def insert_only_new_content(url: str, markdown_file_path: str, file_content_hash: str, category: str, title: str, now: str) -> bool:
         conn = DB.connect_to_db()
         c = conn.cursor()
         c.execute("SELECT file_content_hash FROM markdowns WHERE url=?", (url,))
@@ -63,7 +63,7 @@ class DB:
                 return True
         else:
             c.execute("INSERT INTO markdowns VALUES (null, ?, ?, ?, ?, ?, ?);", \
-                      (url, markdown_file_path, file_content_hash, category, label, now))
+                      (url, markdown_file_path, file_content_hash, category, title, now))
             conn.commit()
             return True
 

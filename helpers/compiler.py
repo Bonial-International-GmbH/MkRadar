@@ -54,14 +54,14 @@ class Compiler:
             logger.info(f"File was writen in {file}")
 
     @staticmethod
-    def save_content_if_it_was_new(url: str, category: str, label: str, now: str, url_type: str = "public"):
+    def save_content_if_it_was_new(url: str, category: str, title: str, now: str, url_type: str = "public"):
 
         markdown_file_path = Compiler._generate_md_file_address(url, category)
 
         url_content_hash, url_content_html = Compiler._get_website_content(url, url_type)
 
         # If something detect as a changed case from DB side we should save MD file to the disk and trigger HTML creator
-        if DB.insert_only_new_content(url, markdown_file_path, url_content_hash, category, label, now):
+        if DB.insert_only_new_content(url, markdown_file_path, url_content_hash, category, title, now):
             Compiler._write_into_file(markdown_file_path, url_content_html, "wb")
 
     @staticmethod
