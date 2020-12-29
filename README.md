@@ -1,5 +1,5 @@
 # MkRadar
-*Markdowns tracker and wiki Generator*
+*Markdowns monitoring system and static site generator*
 
 Usually, when people changing their source code they keep forgetting to update related documents on the wiki side, 
 also, having a well-structured wiki which we can track it easily and 
