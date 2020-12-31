@@ -1,6 +1,6 @@
 """Clean dangling contents"""
 
-from os import walk, remove, path
+from os import walk, remove
 from os.path import join
 from helpers.db_handler import DB
 from helpers.logger import Logger
@@ -27,25 +27,26 @@ class Cleaner:
         return cleaned
 
     @staticmethod
-    def _abandon_markdown_cleaner():
+    def _abandon_markdown_cleaner(website_path: str):
         """
         This method will check markdownStorage folder and try to delete
         the abandon files which don't have any reference in the DB
         """
         existing_files_in_mds_path = [join(dir, file)
-                                      for dir, sub, files in walk("website/docs")
+                                      for dir, sub, files in walk(join(website_path, "docs"))
                                       for file in files]
-        del(existing_files_in_mds_path[0])
+        if existing_files_in_mds_path:
+            del(existing_files_in_mds_path[0])
         for item in existing_files_in_mds_path:
             if not DB.is_exist_in_db(item):
                 logger.info(f"This is going to be deleted: {item}")
                 remove(item)
 
     @staticmethod
-    def clean(markdowns_in_config: list) -> bool:
+    def clean(markdowns_in_config: list, website_path: str) -> bool:
         """
         This method will cal all related methods
         """
         cleaned = Cleaner._db_cleaner(markdowns_in_config)
-        Cleaner._abandon_markdown_cleaner()
+        Cleaner._abandon_markdown_cleaner(website_path)
         return cleaned

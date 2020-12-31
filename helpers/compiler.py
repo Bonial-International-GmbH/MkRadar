@@ -7,6 +7,7 @@ from helpers.providers import UrlOpener
 from helpers.db_handler import DB
 from helpers.logger import Logger
 from helpers.cleaner import Cleaner
+from os.path import join, basename
 
 logger = Logger.initial(__name__)
 
@@ -25,15 +26,15 @@ class Compiler:
         return config["wikiPages"]
 
     @staticmethod
-    def get_all_mds_address_from_config_file() -> list:
-        return [Compiler._generate_md_file_address(md["url"], md["category"]) for md in Compiler.config_reader()]
+    def _get_all_mds_address_from_config_file(website_path: str) -> list:
+        return [Compiler._generate_md_file_address(md["url"], md["category"], website_path) for md in Compiler.config_reader()]
 
     @staticmethod
-    def _generate_md_file_address(url: str, category: str) -> str:
-        markdown_directory_path = f"website/docs/{category}/"
+    def _generate_md_file_address(url: str, category: str, website_path: str) -> str:
+        markdown_directory_path = join(website_path, "docs", category)
         Path(markdown_directory_path).mkdir(parents=True, exist_ok=True)
-        file_name_hash = hashlib.md5(url.encode("utf-8")).hexdigest()
-        markdown_file_path = markdown_directory_path + file_name_hash + ".md"
+        file_name = hashlib.md5(url.encode("utf-8")).hexdigest() + ".md"
+        markdown_file_path = join(markdown_directory_path, file_name)
         return markdown_file_path
 
     @staticmethod
@@ -54,9 +55,9 @@ class Compiler:
             logger.info(f"File was writen in {file}")
 
     @staticmethod
-    def save_content_if_it_was_new(url: str, category: str, title: str, now: str, url_type: str = "public"):
+    def save_content_if_it_was_new(url: str, category: str, title: str, now: str, website_path: str, url_type: str = "public"):
 
-        markdown_file_path = Compiler._generate_md_file_address(url, category)
+        markdown_file_path = Compiler._generate_md_file_address(url, category, website_path)
 
         url_content_hash, url_content_html = Compiler._get_website_content(url, url_type)
 
@@ -69,13 +70,13 @@ class Compiler:
         menu_items = {}
         db_menu_items = DB.get_markdowns_menu()
         for item in db_menu_items:
-            title, file_address, category = item[0], item[1][13:], item[2]
+            title, file_address, category = item[0], basename(item[1]), item[2]
             menu_items[category] = menu_items.get(category, [])
-            menu_items[category].append({title: file_address})
+            menu_items[category].append({title: category + "/" + file_address})
         return menu_items
 
     @staticmethod
-    def _generate_new_mkdocs_config():
+    def _generate_new_mkdocs_config(website_path: str):
         menu_items = Compiler._get_menu_items_from_db()
         logger.info(f" Menu items: {menu_items}")
         mkdocs_config = {
@@ -85,21 +86,25 @@ class Compiler:
         mkdocs_config["nav"].append({"Home": "index.md"})
         for item in menu_items:
             mkdocs_config["nav"].append({item: menu_items[item]})
-        Compiler._write_into_file("website/mkdocs.yml", yaml.dump(mkdocs_config), 'w')
+
+        Compiler._write_into_file(join(website_path, "mkdocs.yml"), yaml.dump(mkdocs_config), 'w')
 
     @staticmethod
-    def _copy_index_md_to_docs():
+    def _copy_index_md_to_docs(website_path: str):
         with open('index.md') as file:
-            Compiler._write_into_file("website/docs/index.md", file.read(), 'w')
+            Compiler._write_into_file(join(website_path, "docs", "index.md"), file.read(), 'w')
 
     @staticmethod
-    def generate_new_static_html_site_if_it_is_needed(now: str):
-        config_file_change_detected = Cleaner.clean(Compiler.get_all_mds_address_from_config_file())
+    def generate_new_static_html_site_if_it_is_needed(now: str, website_path: str):
+        config_file_change_detected = Cleaner.clean(
+            Compiler._get_all_mds_address_from_config_file(website_path),
+            website_path
+        )
         any_new_item_in_the_db = DB.is_there_any_new_update(now)
 
         if config_file_change_detected or any_new_item_in_the_db:
-            Compiler._generate_new_mkdocs_config()
-            Compiler._copy_index_md_to_docs()
-            p1 = subprocess.run(['mkdocs', 'build', '--clean'], capture_output=True, text=True, cwd='website')
+            Compiler._generate_new_mkdocs_config(website_path)
+            Compiler._copy_index_md_to_docs(website_path)
+            p1 = subprocess.run(['mkdocs', 'build', '--clean'], capture_output=True, text=True, cwd=website_path)
             logger.info(p1.stdout)
             logger.error(p1.stderr)

@@ -2,6 +2,8 @@
 import sqlite3
 from sqlite3 import Error
 from helpers.logger import Logger
+from os import getenv
+from os.path import join
 
 logger = Logger.initial(__name__)
 
@@ -23,7 +25,8 @@ class DB:
                                     title text NOT NULL,
                                     latest_update timestamp NOT NULL
                                 );"""
-            conn = sqlite3.connect('website/Mkradar.db')
+            website_path = getenv('MK_RADAR_BUILD_PATH', 'website')
+            conn = sqlite3.connect(join(website_path, "Mkradar.db"))
             # create projects table
             c = conn.cursor()
             c.execute(sql_create_markdowns_table)
