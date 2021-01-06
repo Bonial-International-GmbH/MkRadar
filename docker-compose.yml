@@ -5,6 +5,7 @@ services:
     build: ./
     restart: unless-stopped
     environment:
+      LOG_LEVEL: "INFO"
       MK_RADAR_BUILD_PATH: "website"
       GITHUB_TOKEN: "..."
       BITBUCKET_USERNAME: "..."
