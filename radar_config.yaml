@@ -10,4 +10,4 @@ wikiPages:
     type: public
     notification: false
     tags: "terraform, go, shell"
-    url: "https://github.com/Bonial-International-GmbH/terraform-provider-site24x7/blob/master/Makefile"
+    url: "https://github.com/Bonial-International-GmbH/terraform-provider-site24x7/blob/master/README.md"
