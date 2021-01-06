@@ -16,9 +16,13 @@ class Compiler:
     """Will download MarkDown file and generate static website from downloaded MDs if it is needed"""
 
     @staticmethod
+    def get_project_root() -> Path:
+        return Path(__file__).parent.parent
+
+    @staticmethod
     def config_reader() -> list:
         config = []
-        with open("radar_config.yaml", 'r') as stream:
+        with open(join(Compiler.get_project_root(), "radar_config.yaml"), 'r') as stream:
             try:
                 config = yaml.safe_load(stream)
             except yaml.YAMLError as exc:
@@ -91,7 +95,7 @@ class Compiler:
 
     @staticmethod
     def _copy_index_md_to_docs(website_path: str):
-        with open('index.md') as file:
+        with open(join(Compiler.get_project_root(), 'index.md')) as file:
             Compiler._write_into_file(join(website_path, "docs", "index.md"), file.read(), 'w')
 
     @staticmethod
