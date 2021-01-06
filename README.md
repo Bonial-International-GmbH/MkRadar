@@ -35,12 +35,14 @@ wikiPages:
     title: site24*7
     notification: false
     tags: "terraform, go, shell"
-    url: "https://github.com/Bonial-International-GmbH/terraform-provider-site24x7/blob/master/Makefile"
+    url: "https://github.com/Bonial-International-GmbH/terraform-provider-site24x7/blob/master/README.md"
 ```
 
 After adding the desired MarkDowns you can easily run the program 
  with the help of `docker-compose up` command.
  then you can find the generated static website files in `website/html/` folder.
+
+*Attention:* If you are going to use this in the production it is better to set `LOG_LEVEL` environment variable to the `ERROR` level, you can find it in the `docker-compose.yaml` file.
 
 ## Private Repositories 
 
@@ -77,4 +79,11 @@ We are using [MkDocs](https://www.mkdocs.org) to generate the static website fro
 pip3 install virtualenv
 virtualenv venv
 source venv/bin/activate
+pip install -r requirements.txt 
 ```
+
+for running tests:
+
+```
+ python -m unittest tests/*.py 
+ ```
