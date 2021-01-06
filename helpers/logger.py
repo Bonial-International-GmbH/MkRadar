@@ -1,7 +1,7 @@
 """Wrapper for the logger"""
 import logging
-from os.path import join
-from os import getenv
+from os.path import join, exists, dirname
+from os import getenv, mkdir
 from logging.handlers import RotatingFileHandler
 
 
@@ -16,7 +16,10 @@ class Logger:
         formatter = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
 
         # Roll over after 2MB and keep backup logs app.log.1, app.log.2, etc
-        file_handler = RotatingFileHandler(join("logs", "app.log"), maxBytes=2000000, backupCount=5)
+        log_path = join("logs", "app.log")
+        if not exists(dirname(log_path)):
+            mkdir(dirname(log_path))
+        file_handler = RotatingFileHandler(log_path, maxBytes=2000000, backupCount=5)
         stream_handler = logging.StreamHandler()
 
         file_handler.setFormatter(formatter)
