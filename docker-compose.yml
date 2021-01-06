@@ -11,3 +11,5 @@ services:
       BITBUCKET_USERNAME: "..."
       BITBUCKET_APP_PASSWORD: "..."
       GITLAB_TOKEN: "..."
+    volumes:
+      - ./:/app
