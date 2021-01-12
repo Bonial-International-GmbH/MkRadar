@@ -7,6 +7,7 @@ from helpers.providers import UrlOpener
 from helpers.db_handler import DB
 from helpers.logger import Logger
 from helpers.cleaner import Cleaner
+from helpers.aws_helper import AWS
 from os.path import join, basename
 
 logger = Logger.initial(__name__)
@@ -97,9 +98,11 @@ class Compiler:
     def _copy_index_md_to_docs(website_path: str):
         with open(join(Compiler.get_project_root(), 'index.md')) as file:
             Compiler._write_into_file(join(website_path, "docs", "index.md"), file.read(), 'w')
+            Compiler._write_into_file(join(website_path, "docs", "index.md"), file.read(), 'w')
 
     @staticmethod
-    def generate_new_static_html_site_if_it_is_needed(now: str, website_path: str):
+    def generate_new_static_html_site_if_it_is_needed(
+            now: str, website_path: str, s3_bucket_name: str, s3_bucket_destination: str):
         config_file_change_detected = Cleaner.clean(
             Compiler._get_all_mds_address_from_config_file(website_path),
             website_path
@@ -112,3 +115,6 @@ class Compiler:
             p1 = subprocess.run(['mkdocs', 'build', '--clean'], capture_output=True, text=True, cwd=website_path)
             logger.info(p1.stdout)
             logger.error(p1.stderr)
+            if s3_bucket_name and s3_bucket_destination:
+                AWS.copy_to_s3(website_path, s3_bucket_name, s3_bucket_destination)
+

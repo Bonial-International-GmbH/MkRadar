@@ -42,6 +42,13 @@ After adding the desired MarkDowns you can easily run the program
  with the help of `docker-compose up` command.
  then you can find the generated static website files in `website/html/` folder.
 
+## AWS S3
+
+We are Supporting uploading the static file directory to the S3.
+With the help of that, you can make the outcome of this program persistent
+ for example in the case that you are using this program in a k8s job.
+You need only define the right environment variable which you can find in the `docker-compose.yaml` file.
+
 ## Private Repositories 
 
 Here is the list of supported private git services and how we should create authentication for them:

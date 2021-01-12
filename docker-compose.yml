@@ -10,3 +10,6 @@ services:
       BITBUCKET_USERNAME: "..."
       BITBUCKET_APP_PASSWORD: "..."
       GITLAB_TOKEN: "..."
+      AWS_PROFILE: ""
+      S3_BUCKET_NAME: ""
+      S3_BUCKET_DESTINATION: ""
