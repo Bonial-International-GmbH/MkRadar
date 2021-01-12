@@ -5,6 +5,7 @@ services:
     build: ./
     restart: unless-stopped
     environment:
+      LOG_LEVEL: "INFO"
       MK_RADAR_BUILD_PATH: "website"
       GITHUB_TOKEN: "..."
       BITBUCKET_USERNAME: "..."
@@ -13,3 +14,5 @@ services:
       AWS_PROFILE: ""
       S3_BUCKET_NAME: ""
       S3_BUCKET_DESTINATION: ""
+    volumes:
+      - ./:/app
