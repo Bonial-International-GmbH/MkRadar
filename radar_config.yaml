@@ -1,3 +1,4 @@
+version: "1"
 wikiPages:
   -
     title: aws-nuke
