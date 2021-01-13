@@ -22,6 +22,7 @@ def initial():
     s3_bucket_destination = getenv('S3_BUCKET_DESTINATION', '')
 
     if s3_bucket_name and s3_bucket_destination:
+        logger.info("Trying to use AWS S3")
         bn = s3_bucket_name
         bd = join(s3_bucket_destination, "Mkradar.db")
         fn = join(website_path, "Mkradar.db")
