@@ -27,7 +27,10 @@ def initial():
         bd = join(s3_bucket_destination, "Mkradar.db")
         fn = join(website_path, "Mkradar.db")
         logger.info(f"Downloading {bd} from {bn} to {fn}")
-        AWS.download_from_s3(bn, bd, fn)
+        try:
+            AWS.download_from_s3(bn, bd, fn)
+        except:
+            logger.warn(f"Unable to download Mkradar.db")
 
     for item in config:
         logger.info(f"Registering {item['title']} thread")
