@@ -4,6 +4,7 @@ from helpers.logger import Logger
 from os.path import join, relpath
 from os import walk
 import boto3
+from boto3.exceptions import S3UploadFailedError
 
 logger = Logger.initial(__name__)
 
@@ -39,4 +40,9 @@ class AWS:
                     logger.info(f"Path found on S3! Skipping {s3_path}...")
                 except:
                     logger.info(f"Uploading {s3_path}...")
-                    client.upload_file(local_path, bucket, s3_path)
+                    try:
+                        client.upload_file(local_path, bucket, s3_path)
+                    except S3UploadFailedError as e:
+                        logger.error('Failed to copy to S3 bucket: {msg}'.format(msg=e))
+                    except:
+                        logger.error('Failed to copy to S3 bucket:')
