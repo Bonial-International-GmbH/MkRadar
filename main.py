@@ -30,7 +30,7 @@ def initial():
         try:
             AWS.download_from_s3(bn, bd, fn)
         except:
-            logger.warn(f"Unable to download Mkradar.db")
+            logger.warning(f"Unable to download Mkradar.db")
 
     for item in config:
         logger.info(f"Registering {item['title']} thread")
