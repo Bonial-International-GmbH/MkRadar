@@ -115,6 +115,6 @@ class Compiler:
             p1 = subprocess.run(['mkdocs', 'build', '--clean'], capture_output=True, text=True, cwd=website_path)
             logger.info(p1.stdout)
             logger.error(p1.stderr)
-            if s3_bucket_name and s3_bucket_destination:
+            if s3_bucket_name:
                 AWS.copy_to_s3(website_path, s3_bucket_name, s3_bucket_destination)
 
