@@ -23,15 +23,11 @@ def initial():
 
     if s3_bucket_name:
         logger.info("Trying to use AWS S3")
-        bn = s3_bucket_name
-        bd = join(s3_bucket_destination, "Mkradar.db")
-        fn = join(website_path, "Mkradar.db")
-        logger.info(f"Downloading {bd} from {bn} to {fn}")
-        try:
-            AWS.download_from_s3(bn, bd, fn)
-        except Exception as e:
-            logger.warning(e)
-            logger.warning(f"Unable to download Mkradar.db")
+        AWS.download_mkradar(
+            s3_bucket_name,
+            s3_bucket_destination,
+            website_path
+        )
 
     for item in config:
         logger.info(f"Registering {item['title']} thread")
