@@ -1,5 +1,4 @@
 from os import getenv
-from os.path import join
 from threading import Thread
 from datetime import datetime
 from helpers.compiler import Compiler

@@ -116,5 +116,6 @@ class Compiler:
             logger.info(p1.stdout)
             logger.error(p1.stderr)
             if s3_bucket_name:
+                AWS.clean_s3_bucket(s3_bucket_name)
                 AWS.copy_to_s3(website_path, s3_bucket_name, s3_bucket_destination)
 
