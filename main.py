@@ -29,7 +29,8 @@ def initial():
         logger.info(f"Downloading {bd} from {bn} to {fn}")
         try:
             AWS.download_from_s3(bn, bd, fn)
-        except:
+        except Exception as e:
+            logger.warning(e)
             logger.warning(f"Unable to download Mkradar.db")
 
     for item in config:

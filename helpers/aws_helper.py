@@ -22,7 +22,8 @@ class AWS:
 
         try:
             client.delete_object(Bucket=bucket, Key=destination)
-        except:
+        except Exception as e:
+            logger.error(e)
             logger.error(f"Unable to delete {destination}...")
 
         # enumerate local files recursively
@@ -44,5 +45,6 @@ class AWS:
                         client.upload_file(local_path, bucket, s3_path)
                     except S3UploadFailedError as e:
                         logger.error('Failed to copy to S3 bucket: {msg}'.format(msg=e))
-                    except:
+                    except Exception as e:
+                        logger.error(e)
                         logger.error('Failed to copy to S3 bucket:')
