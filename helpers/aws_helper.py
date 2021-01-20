@@ -1,5 +1,6 @@
 """An interface to deal with AWS"""
 
+import mimetypes
 from helpers.logger import Logger
 from os.path import join, relpath
 from os import walk
@@ -58,6 +59,9 @@ class AWS:
                 local_path = join(root, filename)
                 relative_path = relpath(local_path, local_directory)
                 s3_path = join(destination, relative_path)
+                mimetype, _ = mimetypes.guess_type(local_path)
+                if mimetype is None:
+                    mimetype = "binary/octet-stream"
 
                 logger.info(f"Searching {s3_path} in {bucket}")
                 try:
@@ -66,7 +70,13 @@ class AWS:
                 except:
                     logger.info(f"Uploading {s3_path}...")
                     try:
-                        client.upload_file(local_path, bucket, s3_path)
+                        client.upload_file(
+                            Filename=local_path,
+                            Bucket=bucket,
+                            Key=s3_path,
+                            ExtraArgs={
+                               "ContentType": mimetype
+                            })
                     except S3UploadFailedError as e:
                         logger.error('Failed to copy to S3 bucket: {msg}'.format(msg=e))
                     except Exception as e:
