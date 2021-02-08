@@ -87,6 +87,7 @@ class Compiler:
         mkdocs_config = {
             "site_name": "MkRadar",
             "site_dir": "html",
+            "use_directory_urls": False,
             "nav": []}
         mkdocs_config["nav"].append({"Home": "index.md"})
         for item in menu_items:
@@ -97,7 +98,6 @@ class Compiler:
     @staticmethod
     def _copy_index_md_to_docs(website_path: str):
         with open(join(Compiler.get_project_root(), 'index.md')) as file:
-            Compiler._write_into_file(join(website_path, "docs", "index.md"), file.read(), 'w')
             Compiler._write_into_file(join(website_path, "docs", "index.md"), file.read(), 'w')
 
     @staticmethod
