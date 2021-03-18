@@ -88,6 +88,8 @@ class Compiler:
             "site_name": "MkRadar",
             "site_dir": "html",
             "use_directory_urls": False,
+            "theme":  {
+                "name": "material"} ,
             "nav": []}
         mkdocs_config["nav"].append({"Home": "index.md"})
         for item in menu_items:
