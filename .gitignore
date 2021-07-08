@@ -2,6 +2,6 @@ venv
 .idea
 logs
 website
-helpers/__pycache__/
+__pycache__
 .DS_Store
-
+test.txt

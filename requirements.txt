@@ -5,3 +5,4 @@ mkdocs==1.1.2
 boto3==1.16.52
 botocore==1.19.56
 mkdocs-material==7.0.6
+jsonschema==3.2.0
