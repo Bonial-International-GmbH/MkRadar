@@ -1,0 +1,38 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "MKRadar_Config",
+  "description": "Config file for MKRadar",
+  "type": "object",
+  "properties": {
+    "version": {
+      "type": "string"
+    },
+    "wikiPages": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string"
+          },
+          "category": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string"
+          },
+          "notification": {
+            "type": "boolean"
+          },
+          "tags": {
+            "type": "string"
+          },
+          "url": {
+            "type": "string"
+          }
+        },
+         "required": ["title", "category", "url"]
+      }
+    }
+  }
+}

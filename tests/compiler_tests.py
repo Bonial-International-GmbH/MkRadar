@@ -10,10 +10,6 @@ class CompilerTests(unittest.TestCase):
     website_path = "website"
     test_website_url = "https://github.com/Bonial-International-GmbH/MkRadar/blob/main/README.md"
 
-    def test_config_reader(self):
-        configs = Compiler.config_reader()
-        self.assertIsNotNone(configs)
-
     def test_get_all_mds_address_from_config_file(self):
         mds_list = Compiler._get_all_mds_address_from_config_file(self.website_path)
         self.assertIsInstance(mds_list, list)

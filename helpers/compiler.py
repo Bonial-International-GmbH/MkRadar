@@ -8,6 +8,7 @@ from helpers.db_handler import DB
 from helpers.logger import Logger
 from helpers.cleaner import Cleaner
 from helpers.aws_helper import AWS
+from helpers.config_handler import ConfigHandler
 from os.path import join, basename
 
 logger = Logger.initial(__name__)
@@ -20,19 +21,10 @@ class Compiler:
     def get_project_root() -> Path:
         return Path(__file__).parent.parent
 
-    @staticmethod
-    def config_reader() -> list:
-        config = []
-        with open(join(Compiler.get_project_root(), "radar_config.yaml"), 'r') as stream:
-            try:
-                config = yaml.safe_load(stream)
-            except yaml.YAMLError as exc:
-                logger.error(exc)
-        return config["wikiPages"]
 
     @staticmethod
     def _get_all_mds_address_from_config_file(website_path: str) -> list:
-        return [Compiler._generate_md_file_address(md["url"], md["category"], website_path) for md in Compiler.config_reader()]
+        return [Compiler._generate_md_file_address(md["url"], md["category"], website_path) for md in ConfigHandler.get_mk_pages('radar_config.yaml')]
 
     @staticmethod
     def _generate_md_file_address(url: str, category: str, website_path: str) -> str:

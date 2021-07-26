@@ -4,13 +4,14 @@ from datetime import datetime
 from helpers.compiler import Compiler
 from helpers.logger import Logger
 from helpers.aws_helper import AWS
+from helpers.config_handler import ConfigHandler
 
 logger = Logger.initial(__name__)
 
 
 def initial():
 
-    config = Compiler.config_reader()
+    config = ConfigHandler.get_mk_pages('radar_config.yaml')
 
     markdowns_in_config = []
     threads = []
