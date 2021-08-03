@@ -70,7 +70,9 @@ class Compiler:
             title, file_address, category = item[0], basename(item[1]), item[2]
             menu_items[category] = menu_items.get(category, [])
             menu_items[category].append({title: category + "/" + file_address})
+        menu_items = dict(sorted(menu_items.items()))
         return menu_items
+
 
     @staticmethod
     def _generate_new_mkdocs_config(website_path: str):
