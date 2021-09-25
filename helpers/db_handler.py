@@ -4,6 +4,7 @@ from sqlite3 import Error
 from helpers.logger import Logger
 from os import getenv
 from os.path import join
+from .config_handler import ConfigHandler
 
 logger = Logger.initial(__name__)
 
@@ -25,7 +26,7 @@ class DB:
                                     title text NOT NULL,
                                     latest_update timestamp NOT NULL
                                 );"""
-            website_path = getenv('MK_RADAR_BUILD_PATH', 'website')
+            website_path = ConfigHandler.website_path
             conn = sqlite3.connect(join(website_path, "Mkradar.db"))
             # create projects table
             c = conn.cursor()

@@ -24,7 +24,7 @@ class Compiler:
 
     @staticmethod
     def _get_all_mds_address_from_config_file(website_path: str) -> list:
-        return [Compiler._generate_md_file_address(md["url"], md["category"], website_path) for md in ConfigHandler.get_mk_pages('radar_config.yaml')]
+        return [Compiler._generate_md_file_address(md["url"], md["category"], website_path) for md in ConfigHandler.get_mk_pages()]
 
     @staticmethod
     def _generate_md_file_address(url: str, category: str, website_path: str) -> str:
