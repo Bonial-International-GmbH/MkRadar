@@ -88,6 +88,12 @@ source venv/bin/activate
 pip install -r requirements.txt 
 ```
 
+To see the cli options:
+
+```
+python main.py --help
+```
+
 for running tests:
 
 ```
