@@ -3,7 +3,7 @@ import hashlib
 import yaml
 import subprocess
 from pathlib import Path
-from helpers.providers import UrlOpener
+from .providers.urlopener import UrlOpener
 from helpers.db_handler import DB
 from helpers.logger import Logger
 from helpers.cleaner import Cleaner
@@ -20,7 +20,6 @@ class Compiler:
     @staticmethod
     def get_project_root() -> Path:
         return Path(__file__).parent.parent
-
 
     @staticmethod
     def _get_all_mds_address_from_config_file(website_path: str) -> list:
@@ -54,13 +53,16 @@ class Compiler:
     @staticmethod
     def save_content_if_it_was_new(url: str, category: str, title: str, now: str, website_path: str, url_type: str = "public"):
 
-        markdown_file_path = Compiler._generate_md_file_address(url, category, website_path)
+        markdown_file_path = Compiler._generate_md_file_address(
+            url, category, website_path)
 
-        url_content_hash, url_content_html = Compiler._get_website_content(url, url_type)
+        url_content_hash, url_content_html = Compiler._get_website_content(
+            url, url_type)
 
         # If something detect as a changed case from DB side we should save MD file to the disk and trigger HTML creator
         if DB.insert_only_new_content(url, markdown_file_path, url_content_hash, category, title, now):
-            Compiler._write_into_file(markdown_file_path, url_content_html, "wb")
+            Compiler._write_into_file(
+                markdown_file_path, url_content_html, "wb")
 
     @staticmethod
     def _get_menu_items_from_db() -> dict:
@@ -73,7 +75,6 @@ class Compiler:
         menu_items = dict(sorted(menu_items.items()))
         return menu_items
 
-
     @staticmethod
     def _generate_new_mkdocs_config(website_path: str):
         menu_items = Compiler._get_menu_items_from_db()
@@ -82,19 +83,21 @@ class Compiler:
             "site_name": "MkRadar",
             "site_dir": "html",
             "use_directory_urls": False,
-            "theme":  {
-                "name": "material"} ,
+            "theme": {
+                "name": "material"},
             "nav": []}
         mkdocs_config["nav"].append({"Home": "index.md"})
         for item in menu_items:
             mkdocs_config["nav"].append({item: menu_items[item]})
 
-        Compiler._write_into_file(join(website_path, "mkdocs.yml"), yaml.dump(mkdocs_config), 'w')
+        Compiler._write_into_file(
+            join(website_path, "mkdocs.yml"), yaml.dump(mkdocs_config), 'w')
 
     @staticmethod
     def _copy_index_md_to_docs(website_path: str):
         with open(join(Compiler.get_project_root(), 'index.md')) as file:
-            Compiler._write_into_file(join(website_path, "docs", "index.md"), file.read(), 'w')
+            Compiler._write_into_file(
+                join(website_path, "docs", "index.md"), file.read(), 'w')
 
     @staticmethod
     def generate_new_static_html_site_if_it_is_needed(
@@ -108,10 +111,11 @@ class Compiler:
         if config_file_change_detected or any_new_item_in_the_db:
             Compiler._generate_new_mkdocs_config(website_path)
             Compiler._copy_index_md_to_docs(website_path)
-            p1 = subprocess.run(['mkdocs', 'build', '--clean'], capture_output=True, text=True, cwd=website_path)
+            p1 = subprocess.run(['mkdocs', 'build', '--clean'],
+                                capture_output=True, text=True, cwd=website_path)
             logger.info(p1.stdout)
             logger.error(p1.stderr)
             if s3_bucket_name:
                 AWS.clean_s3_bucket(s3_bucket_name)
-                AWS.copy_to_s3(website_path, s3_bucket_name, s3_bucket_destination)
-
+                AWS.copy_to_s3(website_path, s3_bucket_name,
+                               s3_bucket_destination)

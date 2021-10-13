@@ -1,20 +1,16 @@
-"""Prepare correct settings to get the MarkDown files"""
-import os
-from abc import abstractmethod, ABC
+from .Provider import Provider
+from abc import abstractmethod
 import requests
-from helpers.logger import Logger
 
-logger = Logger.initial(__name__)
+class HTTPProvider(Provider):
 
-
-class Provider(ABC):
-
+    protocol = 'http'
     identifier = None
 
     @classmethod
     @abstractmethod
     def can_open(cls, url: str) -> bool:
-        return cls.identifier in url
+        return cls.identifier in url and url.startswith(cls.protocol)
 
     @classmethod
     @abstractmethod
@@ -47,14 +43,14 @@ class Provider(ABC):
 
         return respons.text
 
-class GenericProvider(Provider):
+class GenericHTTPProvider(HTTPProvider):
 
     @classmethod
     def can_open(cls, url):
-        return True
+        return url.startswith(cls.protocol)
 
 
-class GitHubProvider(Provider):
+class GitHubHTTPProvider(HTTPProvider):
     identifier = "github.com"
 
     @classmethod
@@ -73,7 +69,7 @@ class GitHubProvider(Provider):
         return requests.get(url, headers=headers)
 
 
-class BitBucketProvider(Provider):
+class BitBucketHTTPProvider(HTTPProvider):
 
     identifier = "bitbucket.org"
 
@@ -91,7 +87,7 @@ class BitBucketProvider(Provider):
         return requests.get(url, auth=(username, password))
 
 
-class GitlabProvider(Provider):
+class GitlabHTTPProvider(HTTPProvider):
     identifier = "gitlab.com"
 
     # todo: complete the private section with help of below link
@@ -106,18 +102,3 @@ class GitlabProvider(Provider):
         token = os.getenv('GITLAB_TOKEN', '...')
         headers = {'PRIVATE-TOKEN': token}
         return requests.get(url, headers=headers)
-
-
-PROVIDERS = [GitHubProvider, GitlabProvider, BitBucketProvider, GenericProvider]
-
-
-class UrlOpener:
-    """Handle authentication automatically if it's needed and get the content"""
-
-    @staticmethod
-    def open(desired_url: str, url_type: str):
-        logger.info(f"Check Url: {desired_url}")
-        for provider in PROVIDERS:
-            if provider.can_open(desired_url):
-                logger.debug(f"Using {provider} as provider")
-                return provider.get_page(desired_url)
