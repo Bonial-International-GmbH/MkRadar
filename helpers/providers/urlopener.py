@@ -1,6 +1,5 @@
 """Prepare correct settings to get the MarkDown files"""
 import os
-import git
 import tempfile
 from helpers.logger import Logger
 from .HTTPProvider import GitHubHTTPProvider, GitlabHTTPProvider, BitBucketHTTPProvider, GenericHTTPProvider
