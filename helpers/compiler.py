@@ -36,7 +36,7 @@ class Compiler:
     @staticmethod
     def _get_website_content(url: str, url_type: str) -> tuple:
         logger.info(f"Check Url: {url}")
-        html = UrlOpener.open(url, url_type)
+        html = UrlOpener.open(url)
         url_content_hash = hashlib.md5(html.encode("utf-8")).hexdigest()
         logger.info(url_content_hash)
         return url_content_hash, html

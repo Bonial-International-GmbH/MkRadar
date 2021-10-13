@@ -1,11 +1,15 @@
-from .Provider import Provider
+''' Colection if Provider which deal with HTTP. '''
+import os
 from abc import abstractmethod
+
 import requests
 
-class HTTPProvider(Provider):
+from .provider import Provider
 
+
+class HTTPProvider(Provider):
+    ''' Abstract class as a foundation how HTTPProvider should work'''
     protocol = 'http'
-    identifier = None
 
     @classmethod
     @abstractmethod
@@ -19,12 +23,12 @@ class HTTPProvider(Provider):
 
     @classmethod
     @abstractmethod
-    def _get_page_unauthorized(cls, url: str) -> str:
+    def _get_page_unauthorized(cls, url: str):
         return requests.get(url)
 
     @classmethod
     @abstractmethod
-    def _get_page_authorized(cls, url: str) -> str:
+    def _get_page_authorized(cls, url: str):
         raise NotImplementedError
 
     @classmethod
@@ -33,7 +37,6 @@ class HTTPProvider(Provider):
         url = cls._pre_url_modify(url)
 
         respons = cls._get_page_unauthorized(url)
-
         if respons.status_code == requests.codes.unauthorized:
             respons = cls._get_page_authorized(url)
 
@@ -43,14 +46,16 @@ class HTTPProvider(Provider):
 
         return respons.text
 
-class GenericHTTPProvider(HTTPProvider):
 
+class GenericHTTPProvider(HTTPProvider):
+    ''' Generic Provider which can get all http without authentication'''
     @classmethod
     def can_open(cls, url):
         return url.startswith(cls.protocol)
 
 
 class GitHubHTTPProvider(HTTPProvider):
+    ''' PRovider which can get pages from GitHub'''
     identifier = "github.com"
 
     @classmethod
@@ -70,7 +75,7 @@ class GitHubHTTPProvider(HTTPProvider):
 
 
 class BitBucketHTTPProvider(HTTPProvider):
-
+    ''' PRovider which can get pages from BitBucket'''
     identifier = "bitbucket.org"
 
     @classmethod
@@ -88,6 +93,7 @@ class BitBucketHTTPProvider(HTTPProvider):
 
 
 class GitlabHTTPProvider(HTTPProvider):
+    ''' PRovider which can get pages from GitLab'''
     identifier = "gitlab.com"
 
     # todo: complete the private section with help of below link
