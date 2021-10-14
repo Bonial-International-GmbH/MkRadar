@@ -55,7 +55,7 @@ class GenericHTTPProvider(HTTPProvider):
 
 
 class GitHubHTTPProvider(HTTPProvider):
-    ''' PRovider which can get pages from GitHub'''
+    ''' Provider which can get pages from GitHub'''
     identifier = "github.com"
 
     @classmethod
@@ -75,7 +75,7 @@ class GitHubHTTPProvider(HTTPProvider):
 
 
 class BitBucketHTTPProvider(HTTPProvider):
-    ''' PRovider which can get pages from BitBucket'''
+    ''' Provider which can get pages from BitBucket'''
     identifier = "bitbucket.org"
 
     @classmethod
@@ -93,7 +93,7 @@ class BitBucketHTTPProvider(HTTPProvider):
 
 
 class GitlabHTTPProvider(HTTPProvider):
-    ''' PRovider which can get pages from GitLab'''
+    ''' Provider which can get pages from GitLab'''
     identifier = "gitlab.com"
 
     # todo: complete the private section with help of below link
@@ -101,7 +101,7 @@ class GitlabHTTPProvider(HTTPProvider):
 
     @classmethod
     def _pre_url_modify(cls, url):
-        return url.replace("gitlab.com/", "gitlab.com/api/v4/")
+        return url.replace("blob", "raw")
 
     @classmethod
     def _get_page_authorized(cls, url):
