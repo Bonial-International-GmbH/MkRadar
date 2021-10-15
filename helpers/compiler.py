@@ -71,31 +71,31 @@ class Compiler:
                 markdown_file_path, url_content_html, "wb")
 
     @staticmethod
-    def _get_menu_items_from_db() -> dict:
-        ''' Return a dict with all mardown items in database '''
-        menu_items: dict = {}
-        db_menu_items = DB.get_markdowns_menu()
-        for item in db_menu_items:
-            title, file_address, category = item[0], basename(item[1]), item[2]
-            menu_items[category] = menu_items.get(category, [])
-            menu_items[category].append({title: category + "/" + file_address})
-        menu_items = dict(sorted(menu_items.items()))
-        return menu_items
-
-    @staticmethod
     def _generate_new_mkdocs_config(website_path: str):
-        menu_items = Compiler._get_menu_items_from_db()
-        logger.info(" Menu items: %s", menu_items)
+        ''' Generates a config for mkdocs
+            https://www.mkdocs.org/user-guide/configuration/
+        '''
         mkdocs_config = {
             "site_name": "MkRadar",
             "site_dir": "html",
             "use_directory_urls": False,
-            "theme": {
-                "name": "material"},
-            "nav": []}
-        mkdocs_config["nav"].append({"Home": "index.md"})
-        for item in menu_items:
-            mkdocs_config["nav"].append({item: menu_items[item]})
+            "theme": {"name": "material"},
+            "nav": [
+                {"Home": "index.md"},
+            ]
+        }
+
+        menu_items = DB.get_all_markdowns()
+        logger.info("Menu items: %s", menu_items)
+
+        categories = set([item.category for item in menu_items])
+        for category in categories:
+            items = [{page.title: f"{category}/{page.file_content_hash}.md"}
+                     for page in menu_items if page.category == category]
+
+            mkdocs_config['nav'].append({category: items})
+
+        logger.debug("MKDocs config:\n %s", yaml.dump(mkdocs_config))
 
         Compiler._write_into_file(
             join(website_path, "mkdocs.yml"), yaml.dump(mkdocs_config), 'w')

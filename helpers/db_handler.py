@@ -1,10 +1,11 @@
 """Wrapper for all DB related stuff"""
 import sqlite3
-from sqlite3 import Error
-from helpers.logger import Logger
-from os import getenv
 from os.path import join
+
+from helpers.logger import Logger
+
 from .config_handler import ConfigHandler
+from .helper_datalcasses import MarkdownPage
 
 logger = Logger.initial(__name__)
 
@@ -19,7 +20,7 @@ class DB:
         try:
             sql_create_markdowns_table = """CREATE TABLE IF NOT EXISTS markdowns (
                                     id integer PRIMARY KEY,
-                                    url text NOT NULL,                                    
+                                    url text NOT NULL,
                                     markdown_file_path text NOT NULL,
                                     file_content_hash text NOT NULL,
                                     category text NOT NULL,
@@ -32,16 +33,18 @@ class DB:
             c = conn.cursor()
             c.execute(sql_create_markdowns_table)
             return conn
-        except Error as e:
+        except sqlite3.Error as e:
             logger.error(e)
 
     @staticmethod
-    def get_markdowns_menu() -> list:
+    def get_all_markdowns() -> list[MarkdownPage]:
+        ''' Returns all entries in database '''
         conn = DB.connect_to_db()
-        c = conn.cursor()
-        c.execute("SELECT title, markdown_file_path, category FROM markdowns ORDER BY category")
-        data = c.fetchall()
-        return data
+        cursor = conn.cursor()
+        cursor.execute(
+            "SELECT * FROM markdowns ORDER BY category")
+        data = cursor.fetchall()
+        return [MarkdownPage(*entry) for entry in data]
 
     @staticmethod
     def is_there_any_new_update(now: str) -> int:
@@ -62,11 +65,12 @@ class DB:
             if file_content_hash == data[0][0]:
                 return False
             else:
-                c.execute("UPDATE markdowns SET file_content_hash=? WHERE url=?;", (file_content_hash, url))
+                c.execute(
+                    "UPDATE markdowns SET file_content_hash=? WHERE url=?;", (file_content_hash, url))
                 conn.commit()
                 return True
         else:
-            c.execute("INSERT INTO markdowns VALUES (null, ?, ?, ?, ?, ?, ?);", \
+            c.execute("INSERT INTO markdowns VALUES (null, ?, ?, ?, ?, ?, ?);",
                       (url, markdown_file_path, file_content_hash, category, title, now))
             conn.commit()
             return True
@@ -75,7 +79,8 @@ class DB:
     def is_exist_in_db(markdown_file_path: str) -> bool:
         conn = DB.connect_to_db()
         c = conn.cursor()
-        c.execute("SELECT * FROM markdowns WHERE markdown_file_path ==?", (markdown_file_path,))
+        c.execute("SELECT * FROM markdowns WHERE markdown_file_path ==?",
+                  (markdown_file_path,))
         data = c.fetchall()
         return bool(data)
 
@@ -92,5 +97,6 @@ class DB:
     def delete_markdown_via_filepath(markdown_file_path: str):
         conn = DB.connect_to_db()
         c = conn.cursor()
-        c.execute("DELETE FROM markdowns WHERE markdown_file_path ==?;", (markdown_file_path,))
+        c.execute("DELETE FROM markdowns WHERE markdown_file_path ==?;",
+                  (markdown_file_path,))
         conn.commit()
