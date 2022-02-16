@@ -1,0 +1,16 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: MkRadar
+  description: Markdowns monitoring system and static site generator
+    Usually, when people changing their source code they keep forgetting to update related documents on the wiki side, also, having a well-structured wiki which we can track it easily and changing it smoothly is hard, therefore, here we are trying to find a solution for these problems.
+  annotations:
+    github.com/project-slug: Bonial-International-GmbH/MkRadar
+  tags:
+    - doc
+    - python
+    - opensource
+spec:
+  type: service
+  lifecycle: experimental
+  owner: team-devops
